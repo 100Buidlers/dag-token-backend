@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: dag-token-backend
+Transform:
+- AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 900
+Resources:
+  RuleGraphFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          PRIVATE_KEY: 32886d5a3a8cfc7cd0e24b0787e44ffc31b711b5df52a2b388c539f084fb2fef
+          ALCHEMY_API_KEY: w3P5g5S0SLQvDPksCjziSXMK-EJKiJMm
+      PackageType: Image
+      ImageConfig:
+        Command:
+        - src/handlers/rule-graph.ruleGraphHandler
+      Events:
+        PostRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: POST
+        GetRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: GET
+            RequestParameters:
+            - method.request.queryString.table: null
+              Required: true
+              Caching: true
+        PutRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: PUT
+      ImageUri: rulegraphfunction:nodejs14.x-v1
+    Metadata:
+      DockerContext: /Users/neodurden/fun/hackathon/ethOnline2022/dag-token-backend
+      DockerTag: nodejs14.x-v1
+      Dockerfile: Dockerfile
+      SamResourceId: RuleGraphFunction
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
