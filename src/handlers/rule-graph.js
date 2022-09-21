@@ -1,19 +1,17 @@
 const fetch = require("node-fetch");
 const uuid = require("uuid");
+const AWS = require("aws-sdk");
 
 globalThis.fetch = fetch;
 
 const ethers = require("ethers");
 const tbl = require("@tableland/sdk");
 
-// const PRIVATE_KEY = process.env.PRIVATE_KEY;
-// const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-
-const PRIVATE_KEY =
-  "32886d5a3a8cfc7cd0e24b0787e44ffc31b711b5df52a2b388c539f084fb2fef";
-const ALCHEMY_API_KEY = "w3P5g5S0SLQvDPksCjziSXMK-EJKiJMm";
+// const ALCHEMY_API_KEY = "w3P5g5S0SLQvDPksCjziSXMK-EJKiJMm";
 const INFURA_API_KEY = "25f28dcc7e6b4c85b74ddfb3eeda03e5";
 
+const SECRET_NAME = "wallet-keys";
+const PUB_KEY = "0xc8B4a82A1cc76C62BeFB883906ec12E2F1b4feB6";
 const NETWORK = "testnet";
 const CHAIN_NAME = "polygon-mumbai";
 const chain = tbl.SUPPORTED_CHAINS[CHAIN_NAME];
@@ -38,16 +36,10 @@ const TABLES = {
   },
 };
 
-const wallet = new ethers.Wallet(PRIVATE_KEY);
-
 const provider = new ethers.providers.InfuraProvider(
   chain.name,
   INFURA_API_KEY
 );
-
-// By default, `connect` uses the Tableland testnet validator;
-// it will sign a message using the associated wallet
-const signer = wallet.connect(provider);
 
 exports.ruleGraphHandler = async (event) => {
   const method = event.httpMethod;
@@ -58,6 +50,13 @@ exports.ruleGraphHandler = async (event) => {
 
   // All log statements are written to CloudWatch
   console.info("[RuleGraph] Event:", JSON.stringify(event));
+
+  const secret = await getSecretValue(SECRET_NAME);
+  const wallet = new ethers.Wallet(secret[PUB_KEY]);
+
+  // By default, `connect` uses the Tableland testnet validator;
+  // it will sign a message using the associated wallet
+  const signer = wallet.connect(provider);
 
   const tableland = await tbl.connect({
     signer,
@@ -328,4 +327,25 @@ const putRuleGraph = async (body, tableland) => {
     success: true,
     res: { statusCode: 200, body: JSON.stringify(updateRes) },
   };
+};
+
+const getSecretValue = async (secretName) => {
+  const client = new AWS.SecretsManager({ region: "us-east-1" });
+
+  return new Promise((resolve, reject) => {
+    client.getSecretValue({ SecretId: secretName }, function (err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        let secret;
+        if ("SecretString" in data) {
+          secret = data.SecretString;
+        } else {
+          let buff = new Buffer(data.SecretBinary, "base64");
+          secret = buff.toString("ascii");
+        }
+        resolve(JSON.parse(secret));
+      }
+    });
+  });
 };
