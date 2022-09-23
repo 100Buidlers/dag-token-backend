@@ -11,6 +11,7 @@ const tbl = require("@tableland/sdk");
 const INFURA_API_KEY = "25f28dcc7e6b4c85b74ddfb3eeda03e5";
 
 const SECRET_NAME = "wallet-keys";
+// TestAccount1
 const PUB_KEY = "0x684e1941cECF6fE74174838313b203bb2382Cbd9";
 const NETWORK = "testnet";
 const CHAIN_NAME = "polygon-mumbai";
@@ -19,18 +20,19 @@ const CHAIN_ID = chain.chainId;
 
 const TABLES = {
   user: {
-    prefix: "user_table",
+    prefix: "user_table_v1",
     columns: "uuid text, eoa text, primary key (uuid)",
     column_names: "uuid, eoa",
   },
   rule: {
-    prefix: "rule_table",
+    prefix: "rule_table_v1",
     columns:
-      "uuid text, name text, bytes text, graph text, metadata_uri text, token_id int, creator text, primary key (uuid)",
-    column_names: "uuid, name, bytes, graph, metadata_uri, token_id, creator",
+      "uuid text, name text, description text, bytes text, graph text, metadata_uri text, token_id int, creator text, primary key (uuid)",
+    column_names:
+      "uuid, name, description, bytes, graph, metadata_uri, token_id, creator",
   },
   follow: {
-    prefix: "follow_table",
+    prefix: "follow_table_v1",
     columns: "uuid text, user_uuid text , rule_uuid text, primary key (uuid)",
     column_names: "uuid, user_uuid, rule_uuid",
   },

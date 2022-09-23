@@ -1,6 +1,4 @@
 {
   "path": "/graph",
-  "httpMethod": "POST",
-  "body": "{\n    \"table\": \"rule\",\n    \"name\": \"test_ruless\",\n    \"bytes\": \"test_bytesss\",\n    \"graph\": \"test_graphss\",\n    \"metadata_uri\": \"test_uriss\",\n    \"token_id\": 1,\n    \"creator\": \"0xCF902809B5e49fbA6D779dB5301F76A52aFeD6a3\"\n}"
-
+  "httpMethod": "GET"
 }
