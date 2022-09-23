@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "dag-token"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-cfwlhbxaj1nl"
+s3_prefix = "dag-token"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = ["RuleGraphFunction=201761303271.dkr.ecr.us-east-1.amazonaws.com/dagtoken24027a15/rulegraphfunction9d0e66cdrepo"]

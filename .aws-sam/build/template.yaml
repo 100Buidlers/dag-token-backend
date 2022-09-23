@@ -34,10 +34,6 @@ Resources:
           Properties:
             Path: /graph
             Method: GET
-            RequestParameters:
-            - method.request.queryString.table: null
-              Required: true
-              Caching: true
         PutRuleGraph:
           Type: Api
           Properties:

@@ -11,7 +11,7 @@ const tbl = require("@tableland/sdk");
 const INFURA_API_KEY = "25f28dcc7e6b4c85b74ddfb3eeda03e5";
 
 const SECRET_NAME = "wallet-keys";
-const PUB_KEY = "0xc8B4a82A1cc76C62BeFB883906ec12E2F1b4feB6";
+const PUB_KEY = "0x684e1941cECF6fE74174838313b203bb2382Cbd9";
 const NETWORK = "testnet";
 const CHAIN_NAME = "polygon-mumbai";
 const chain = tbl.SUPPORTED_CHAINS[CHAIN_NAME];
@@ -26,8 +26,8 @@ const TABLES = {
   rule: {
     prefix: "rule_table",
     columns:
-      "uuid text, name text, bytes text, graph text, creator text, primary key (uuid)",
-    column_names: "uuid, name, bytes, graph, creator",
+      "uuid text, name text, bytes text, graph text, metadata_uri text, token_id int, creator text, primary key (uuid)",
+    column_names: "uuid, name, bytes, graph, metadata_uri, token_id, creator",
   },
   follow: {
     prefix: "follow_table",
@@ -46,6 +46,12 @@ exports.ruleGraphHandler = async (event) => {
   let response = {
     statusCode: 200,
     body: JSON.stringify({ message: "default!" }),
+    headers: {
+      "Access-Control-Allow-Headers":
+        "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+    },
   };
 
   // All log statements are written to CloudWatch
@@ -82,7 +88,16 @@ exports.ruleGraphHandler = async (event) => {
     const { success, res } = await putRuleGraph(body, tableland);
     response = res;
   } else {
-    return { statusCode: 405, message: "Method not supported!" };
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ message: "Method not supported!" }),
+      headers: {
+        "Access-Control-Allow-Headers":
+          "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+      },
+    };
   }
 
   return response;
@@ -109,7 +124,7 @@ const getInsertValues = (columns, data) => {
       valueArr.push(`'${uuid.v4()}'`);
     } else {
       const value = data[field];
-      if (!value) {
+      if (value == undefined || value == null) {
         missing.push(field);
         continue;
       }
@@ -136,7 +151,7 @@ const getUpdateValues = (columns, data) => {
       continue;
     } else {
       const value = data[field];
-      if (!value) continue;
+      if (value == undefined || value == null) continue;
       valueArr.push(`${field}='${value}'`);
     }
   }
@@ -173,6 +188,12 @@ const getTableValues = async (tableland, name) => {
         body: JSON.stringify({
           message: `${name} is a invalid table name! A valid table name is required in the body/param. [valid names: user/rule/follow]`,
         }),
+        headers: {
+          "Access-Control-Allow-Headers":
+            "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+        },
       },
     };
   }
@@ -184,6 +205,12 @@ const getTableValues = async (tableland, name) => {
       res: {
         statusCode: 404,
         body: JSON.stringify({ message: `No table found with name ${name}` }),
+        headers: {
+          "Access-Control-Allow-Headers":
+            "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+        },
       },
     };
   }
@@ -253,7 +280,16 @@ const getRuleGraph = async (params, tableland) => {
 
   return {
     success: true,
-    res: { statusCode: 200, body: JSON.stringify(data) },
+    res: {
+      statusCode: 200,
+      body: JSON.stringify(data),
+      headers: {
+        "Access-Control-Allow-Headers":
+          "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+      },
+    },
   };
 };
 
@@ -273,6 +309,12 @@ const postRuleGraph = async (body, tableland) => {
       res: {
         statusCode: 400,
         body: JSON.stringify({ message: insertValues.message }),
+        headers: {
+          "Access-Control-Allow-Headers":
+            "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+        },
       },
     };
   }
@@ -281,9 +323,20 @@ const postRuleGraph = async (body, tableland) => {
   console.info("query", query);
   const insertRes = await tableland.write(query);
 
+  console.info("insertRes", JSON.stringify(insertRes));
+
   return {
     success: true,
-    res: { statusCode: 200, body: JSON.stringify(insertRes) },
+    res: {
+      statusCode: 200,
+      body: JSON.stringify(insertRes),
+      headers: {
+        "Access-Control-Allow-Headers":
+          "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+      },
+    },
   };
 };
 
@@ -296,6 +349,12 @@ const putRuleGraph = async (body, tableland) => {
       res: {
         statusCode: 400,
         body: JSON.stringify({ message: "uuid field is required!" }),
+        headers: {
+          "Access-Control-Allow-Headers":
+            "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+        },
       },
     };
   }
@@ -315,6 +374,12 @@ const putRuleGraph = async (body, tableland) => {
       res: {
         statusCode: 400,
         body: JSON.stringify({ message: updateValues.message }),
+        headers: {
+          "Access-Control-Allow-Headers":
+            "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+        },
       },
     };
   }
@@ -323,9 +388,20 @@ const putRuleGraph = async (body, tableland) => {
   console.info("query", query);
   const updateRes = await tableland.write(query);
 
+  console.info("updateRes", JSON.stringify(updateRes));
+
   return {
     success: true,
-    res: { statusCode: 200, body: JSON.stringify(updateRes) },
+    res: {
+      statusCode: 200,
+      body: JSON.stringify(updateRes),
+      headers: {
+        "Access-Control-Allow-Headers":
+          "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "PUT,OPTIONS,POST,GET",
+      },
+    },
   };
 };
 
