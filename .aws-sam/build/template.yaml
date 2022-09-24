@@ -24,6 +24,11 @@ Resources:
         Command:
         - src/handlers/rule-graph.ruleGraphHandler
       Events:
+        OptionsRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: OPTIONS
         PostRuleGraph:
           Type: Api
           Properties:

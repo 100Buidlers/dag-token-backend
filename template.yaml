@@ -1,3 +1,4 @@
+---
 # This is the SAM template that represents the architecture of your serverless application
 # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
 
@@ -26,15 +27,20 @@ Resources:
         - x86_64
       Environment:
         Variables:
-          PRIVATE_KEY: "32886d5a3a8cfc7cd0e24b0787e44ffc31b711b5df52a2b388c539f084fb2fef"
-          ALCHEMY_API_KEY: "w3P5g5S0SLQvDPksCjziSXMK-EJKiJMm"
+          PRIVATE_KEY: 32886d5a3a8cfc7cd0e24b0787e44ffc31b711b5df52a2b388c539f084fb2fef
+          ALCHEMY_API_KEY: w3P5g5S0SLQvDPksCjziSXMK-EJKiJMm
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:wallet-keys-R3IWWV"
       PackageType: Image
       ImageConfig:
-        Command: ["src/handlers/rule-graph.ruleGraphHandler"]
+        Command: [src/handlers/rule-graph.ruleGraphHandler]
       Events:
+        OptionsRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: OPTIONS
         PostRuleGraph:
           Type: Api
           Properties:
@@ -57,5 +63,5 @@ Resources:
 
 Outputs:
   WebEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage"
+    Description: API Gateway endpoint URL for Prod stage
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

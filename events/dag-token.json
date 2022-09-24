@@ -1,4 +1,5 @@
 {
   "path": "/graph",
+  "queryStringParameters": {"table": "rule"},
   "httpMethod": "GET"
 }
