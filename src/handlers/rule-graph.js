@@ -47,7 +47,7 @@ const HEADERS = {
   "Access-Control-Allow-Headers":
     "Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token,Origin",
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "OPTIONS,POST,PUT,GET",
+  "Access-Control-Allow-Methods": "OPTIONS,POST,DELETE,PUT,GET",
 };
 
 exports.ruleGraphHandler = async (event) => {
@@ -98,6 +98,12 @@ exports.ruleGraphHandler = async (event) => {
   } else if (method == "PUT") {
     const body = parseEvent(event);
     const { success, res } = await putRuleGraph(body, tableland);
+    response = res;
+  } else if (method == "DELETE") {
+    const { success, res } = await deleteRuleGraph(
+      event?.queryStringParameters,
+      tableland
+    );
     response = res;
   } else {
     return {
@@ -174,7 +180,7 @@ const getUpdateValues = (columns, data) => {
   return { success: true, values: valueArr.join(","), message: null };
 };
 
-const getReadClauses = (columns, data) => {
+const getClauses = (columns, data) => {
   let clauseArr = [];
   let columnArr = columns.replace(/\s+/g, "").split(",");
   for (let [k, value] of Object.entries(data)) {
@@ -250,6 +256,32 @@ const createTables = async (tableland) => {
   }
 };
 
+const deleteRuleGraph = async (params, tableland) => {
+  const table = params.table;
+  const { success, res, tableInfo, tableName } = await getTableValues(
+    tableland,
+    table
+  );
+
+  if (!success) return { success, res };
+
+  const clauses = getClauses(tableInfo.column_names, params);
+  const query = `DELETE FROM ${tableName} ${
+    !clauses.length ? "" : `WHERE ${clauses}`
+  }`;
+  console.info("query", query);
+  const deleteRes = await tableland.write(query);
+
+  return {
+    success: true,
+    res: {
+      statusCode: 200,
+      headers: HEADERS,
+      body: JSON.stringify(deleteRes),
+    },
+  };
+};
+
 const getRuleGraph = async (params, tableland) => {
   console.info("params", JSON.stringify(params));
   const table = params.table;
@@ -260,7 +292,7 @@ const getRuleGraph = async (params, tableland) => {
 
   if (!success) return { success, res };
 
-  const clauses = getReadClauses(tableInfo.column_names, params);
+  const clauses = getClauses(tableInfo.column_names, params);
   const query = `SELECT * FROM ${tableName} ${
     !clauses.length ? "" : `WHERE ${clauses}`
   }`;

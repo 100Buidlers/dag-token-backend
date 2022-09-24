@@ -46,6 +46,11 @@ Resources:
           Properties:
             Path: /graph
             Method: POST
+        DeleteRuleGraph:
+          Type: Api
+          Properties:
+            Path: /graph
+            Method: DELETE
         GetRuleGraph:
           Type: Api
           Properties:
