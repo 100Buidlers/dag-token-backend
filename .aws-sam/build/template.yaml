@@ -5,6 +5,14 @@ Transform:
 Globals:
   Function:
     Timeout: 900
+  Api:
+    BinaryMediaTypes:
+    - multipart~1form-data
+    - image~1png
+    - image~1jpeg
+    - image~1jpg
+    - image~1gif
+    - image~1tiff
 Resources:
   RuleGraphFunction:
     Type: AWS::Serverless::Function
@@ -55,6 +63,59 @@ Resources:
       DockerTag: nodejs14.x-v1
       Dockerfile: Dockerfile
       SamResourceId: RuleGraphFunction
+  AuxiliaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+      - x86_64
+      Environment:
+        Variables:
+          DAG_TOKEN_TABLE:
+            Ref: DagTokenTable
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: DagTokenTable
+      PackageType: Image
+      ImageConfig:
+        Command:
+        - src/handlers/auxiliary.auxiliaryHandler
+      Events:
+        OptionsRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: OPTIONS
+        PostRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: POST
+        GetRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: GET
+        PutRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: PUT
+      ImageUri: rulegraphfunction:nodejs14.x-v1
+    Metadata:
+      DockerContext: /Users/neodurden/fun/hackathon/ethOnline2022/dag-token-backend
+      DockerTag: nodejs14.x-v1
+      Dockerfile: Dockerfile
+      SamResourceId: AuxiliaryFunction
+  DagTokenTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage

@@ -16,6 +16,14 @@ Transform:
 Globals:
   Function:
     Timeout: 900
+  Api:
+    BinaryMediaTypes:
+      - multipart~1form-data
+      - image~1png
+      - image~1jpeg
+      - image~1jpg
+      - image~1gif
+      - image~1tiff
 
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
@@ -65,6 +73,57 @@ Resources:
       DockerTag: nodejs14.x-v1
       DockerContext: .
       Dockerfile: Dockerfile
+
+  AuxiliaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DAG_TOKEN_TABLE: !Ref DagTokenTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DagTokenTable
+      PackageType: Image
+      ImageConfig:
+        Command: [src/handlers/auxiliary.auxiliaryHandler]
+      Events:
+        OptionsRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: OPTIONS
+        PostRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: POST
+        GetRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: GET
+        PutRuleGraph:
+          Type: Api
+          Properties:
+            Path: /auxiliary
+            Method: PUT
+    Metadata:
+      DockerTag: nodejs14.x-v1
+      DockerContext: .
+      Dockerfile: Dockerfile
+
+  # DynamoDB table to store item
+  DagTokenTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
 
 Outputs:
   WebEndpoint:

@@ -1,0 +1,9 @@
+{
+    "resource": "/auxiliary",
+    "path": "/auxiliary",
+    "httpMethod": "GET",
+    "queryStringParameters": {
+        "id": "test"
+    }
+
+}

@@ -1,0 +1,4 @@
+{
+    "httpMethod": "PUT",
+    "body": "{\"id\": \"test\",\"uri\": \"newTestValue\"}"
+}

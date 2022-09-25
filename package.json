@@ -6,8 +6,11 @@
     "dependencies": {
         "@tableland/sdk": "^3.1.2",
         "aws-sdk": "^2.799.0",
+        "busboy": "^1.6.0",
         "ethers": "^5.7.1",
-        "node-fetch": "^2.6.7"
+        "node-fetch": "^2.6.7",
+        "raw-body": "^2.5.1",
+        "web3.storage": "^4.4.0"
     },
     "devDependencies": {
         "eslint": "^8.23.1"

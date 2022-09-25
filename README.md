@@ -17,3 +17,7 @@ owner: 0xc8B4a82A1cc76C62BeFB883906ec12E2F1b4feB6
 2022-09-21T19:06:08.663Z        6a67e928-415d-4d78-836a-07295402dfed    INFO    {"success":true,"message":"rule_table Table created successfully!","data":{"tableId":{"type":"BigNumber","hex":"0x09f3"},"prefix":"rule_table","chainId":80001,"txnHash":"0x2c3aefe32d99fe5f47f486816b8d2cb00ed6c64d4f7178ea1c7287beff3dcd4e","blockNumber":28223883,"name":"rule_table_80001_2547"}}
 
 2022-09-21T19:06:24.163Z        6a67e928-415d-4d78-836a-07295402dfed    INFO    {"success":true,"message":"follow_table Table created successfully!","data":{"tableId":{"type":"BigNumber","hex":"0x09f4"},"prefix":"follow_table","chainId":80001,"txnHash":"0xe4b4a45d4d22d1aea43600d9cc7178c8749d59a63986f7e4a055784dd171e68f","blockNumber":28223886,"name":"follow_table_80001_2548"}}
+
+---
+
+{"name":"imageFile","description":"some text","image":{"filename":{"filename":"5waysto_100M_business.png","encoding":"7bit","mimeType":"image/png"},"content":{"type":"Buffer","data":[239,...]}}}
